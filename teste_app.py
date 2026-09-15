@@ -48,3 +48,8 @@ def test_obter_imovel_existente(client, imovel_teste):
 def test_obter_imovel_inexistente(client):
     response = client.get('/imoveis/999999999')
     assert response.status_code == 404
+
+def test_buscar_por_tipo(client, imovel_teste):
+    response = client.get('/imoveis/tipo/casa')
+    assert response.status_code == 200
+    assert any(i['id'] == imovel_teste for i in response.json)
