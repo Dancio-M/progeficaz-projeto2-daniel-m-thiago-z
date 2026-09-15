@@ -53,3 +53,8 @@ def test_buscar_por_tipo(client, imovel_teste):
     response = client.get('/imoveis/tipo/casa')
     assert response.status_code == 200
     assert any(i['id'] == imovel_teste for i in response.json)
+
+def test_buscar_por_cidade(client, imovel_teste):
+    response = client.get(f'/imoveis/cidade/{quote("Cidade Teste")}')
+    assert response.status_code == 200
+    assert any(i['id'] == imovel_teste for i in response.json)
