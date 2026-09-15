@@ -58,3 +58,28 @@ def test_buscar_por_cidade(client, imovel_teste):
     response = client.get(f'/imoveis/cidade/{quote("Cidade Teste")}')
     assert response.status_code == 200
     assert any(i['id'] == imovel_teste for i in response.json)
+
+def test_criar_imovel(client):
+    novo = {
+        'logradouro': 'Avenida Nova',
+        'tipo_logradouro': 'Avenida',
+        'bairro': 'Bairro Novo',
+        'cidade': 'Cidade Nova',
+        'cep': '11111-111',
+        'tipo': 'apartamento',
+        'valor': 250000.0,
+        'data_aquisicao': '2024-05-10',
+    }
+    response = client.post('/imoveis', json=novo)
+    assert response.status_code == 201
+    assert response.json['cidade'] == 'Cidade Nova'
+
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute("DELETE FROM imoveis WHERE id = %s", (response.json['id'],))
+    conn.close()
+
+
+def test_criar_imovel_sem_campos_obrigatorios(client):
+    response = client.post('/imoveis', json={'tipo': 'casa'})
+    assert response.status_code == 400
