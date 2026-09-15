@@ -1,4 +1,5 @@
 pytest
 flask
+mysql
 PyMySQL
 python-dotenv
