@@ -36,5 +36,16 @@ def obter_imovel(imovel_id):
     finally:
         conn.close()
 
+@app.route('/imoveis/tipo/<string:tipo>', methods=['GET'])
+def buscar_por_tipo(tipo):
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM imoveis WHERE tipo = %s", (tipo,))
+            imoveis = cursor.fetchall()
+        return jsonify(imoveis), 200
+    finally:
+        conn.close()
+
 if __name__ == '__main__':
     app.run(debug=True)
