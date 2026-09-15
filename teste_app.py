@@ -38,3 +38,13 @@ def test_listar_imoveis(client, imovel_teste):
     assert response.status_code == 200
     assert isinstance(response.json, list)
     assert any(i['id'] == imovel_teste for i in response.json)
+
+def test_obter_imovel_existente(client, imovel_teste):
+    response = client.get(f'/imoveis/{imovel_teste}')
+    assert response.status_code == 200
+    assert response.json['cidade'] == 'Cidade Teste'
+
+
+def test_obter_imovel_inexistente(client):
+    response = client.get('/imoveis/999999999')
+    assert response.status_code == 404
