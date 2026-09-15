@@ -58,5 +58,34 @@ def buscar_por_cidade(cidade):
     finally:
         conn.close()
 
+@app.route('/imoveis', methods=['POST'])
+def criar_imovel():
+    dados = request.get_json(silent=True)
+    if not dados:
+        return jsonify({'erro': 'JSON inválido ou ausente'}), 400
+
+    faltando = [c for c in CAMPOS_OBRIGATORIOS if c not in dados]
+    if faltando:
+        return jsonify({'erro': f'Campos obrigatórios ausentes: {", ".join(faltando)}'}), 400
+
+    campos = [c for c in COLUNAS if c in dados]
+    valores = [dados[c] for c in campos]
+    placeholders = ', '.join(['%s'] * len(campos))
+    colunas_sql = ', '.join(campos)
+
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                f"INSERT INTO imoveis ({colunas_sql}) VALUES ({placeholders})",
+                valores,
+            )
+            novo_id = cursor.lastrowid
+            cursor.execute("SELECT * FROM imoveis WHERE id = %s", (novo_id,))
+            imovel = cursor.fetchone()
+        return jsonify(imovel), 201
+    finally:
+        conn.close()
+
 if __name__ == '__main__':
     app.run(debug=True)
