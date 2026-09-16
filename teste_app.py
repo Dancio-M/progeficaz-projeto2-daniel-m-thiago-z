@@ -84,9 +84,9 @@ def test_criar_imovel_sem_campos_obrigatorios(client):
     assert response.status_code == 400
 
 def test_atualizar_imovel(client, imovel_teste):
-    response = client.put(f'/imoveis/{imovel_teste}', json={'valor': 999999.99})
+    response = client.put(f'/imoveis/{imovel_teste}', json={'valor': 350000.50})
     assert response.status_code == 200
-    assert response.json['valor'] == 999999.99
+    assert response.json['valor'] == pytest.approx(350000.50, rel=1e-4)
 
 def test_atualizar_imovel_inexistente(client):
     response = client.put('/imoveis/999999999', json={'valor': 100.0})

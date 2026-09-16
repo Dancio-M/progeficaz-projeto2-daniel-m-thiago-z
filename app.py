@@ -87,5 +87,31 @@ def criar_imovel():
     finally:
         conn.close()
 
+@app.route('/imoveis/<int:imovel_id>', methods=['PUT'])
+def atualizar_imovel(imovel_id):
+    dados = request.get_json(silent=True)
+    if not dados:
+        return jsonify({'erro': 'JSON inválido ou ausente'}), 400
+
+    campos = [c for c in COLUNAS if c in dados]
+    if not campos:
+        return jsonify({'erro': 'Nenhum campo válido para atualizar'}), 400
+
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            if not imovel_existe(cursor, imovel_id):
+                return jsonify({'erro': 'Imóvel não encontrado'}), 404
+
+            set_sql = ', '.join([f"{c} = %s" for c in campos])
+            valores = [dados[c] for c in campos] + [imovel_id]
+            cursor.execute(f"UPDATE imoveis SET {set_sql} WHERE id = %s", valores)
+
+            cursor.execute("SELECT * FROM imoveis WHERE id = %s", (imovel_id,))
+            imovel = cursor.fetchone()
+        return jsonify(imovel), 200
+    finally:
+        conn.close()
+
 if __name__ == '__main__':
     app.run(debug=True)
