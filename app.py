@@ -113,5 +113,17 @@ def atualizar_imovel(imovel_id):
     finally:
         conn.close()
 
+@app.route('/imoveis/<int:imovel_id>', methods=['DELETE'])
+def remover_imovel(imovel_id):
+    conn = get_connection()
+    try:
+        with conn.cursor() as cursor:
+            if not imovel_existe(cursor, imovel_id):
+                return jsonify({'erro': 'Imóvel não encontrado'}), 404
+            cursor.execute("DELETE FROM imoveis WHERE id = %s", (imovel_id,))
+        return '', 204
+    finally:
+        conn.close()
+
 if __name__ == '__main__':
     app.run(debug=True)

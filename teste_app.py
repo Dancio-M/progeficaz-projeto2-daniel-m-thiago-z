@@ -108,7 +108,6 @@ def test_remover_imovel(client):
     response = client.get(f'/imoveis/{imovel_id}')
     assert response.status_code == 404
 
-
 def test_remover_imovel_inexistente(client):
     response = client.delete('/imoveis/999999999')
     assert response.status_code == 404
