@@ -6,6 +6,13 @@ app = Flask(__name__)
 COLUNAS = ['logradouro', 'tipo_logradouro', 'bairro', 'cidade', 'cep', 'tipo', 'valor', 'data_aquisicao']
 CAMPOS_OBRIGATORIOS = ['logradouro', 'cidade']
 
+@app.route('/', methods=['GET'])
+def inicio():
+    return jsonify({
+        'nome': 'API Projeto Eficaz',
+        'status': 'online',
+        'endpoint_principal': '/imoveis',
+    }), 200
 
 @app.route('/imoveis', methods=['GET'])
 def listar_imoveis():
