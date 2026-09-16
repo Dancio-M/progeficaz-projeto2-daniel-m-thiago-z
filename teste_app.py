@@ -79,7 +79,15 @@ def test_criar_imovel(client):
         cursor.execute("DELETE FROM imoveis WHERE id = %s", (response.json['id'],))
     conn.close()
 
-
 def test_criar_imovel_sem_campos_obrigatorios(client):
     response = client.post('/imoveis', json={'tipo': 'casa'})
     assert response.status_code == 400
+
+def test_atualizar_imovel(client, imovel_teste):
+    response = client.put(f'/imoveis/{imovel_teste}', json={'valor': 999999.99})
+    assert response.status_code == 200
+    assert response.json['valor'] == 999999.99
+
+def test_atualizar_imovel_inexistente(client):
+    response = client.put('/imoveis/999999999', json={'valor': 100.0})
+    assert response.status_code == 404
