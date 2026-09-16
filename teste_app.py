@@ -32,6 +32,15 @@ def imovel_teste():
         cursor.execute("DELETE FROM imoveis WHERE id = %s", (imovel_id,))
     conn.close()
 
+def test_rota_inicial(client):
+    response = client.get('/')
+
+    assert response.status_code == 200
+    assert response.json == {
+        'nome': 'API Projeto Eficaz',
+        'status': 'online',
+        'endpoint_principal': '/imoveis',
+    }
 
 def test_listar_imoveis(client, imovel_teste):
     response = client.get('/imoveis')
