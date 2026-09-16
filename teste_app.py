@@ -91,3 +91,24 @@ def test_atualizar_imovel(client, imovel_teste):
 def test_atualizar_imovel_inexistente(client):
     response = client.put('/imoveis/999999999', json={'valor': 100.0})
     assert response.status_code == 404
+
+def test_remover_imovel(client):
+    conn = get_connection()
+    with conn.cursor() as cursor:
+        cursor.execute(
+            "INSERT INTO imoveis (logradouro, cidade, tipo, valor) VALUES (%s, %s, %s, %s)",
+            ('Rua Remover', 'Cidade Remover', 'terreno', 50000.0),
+        )
+        imovel_id = cursor.lastrowid
+    conn.close()
+
+    response = client.delete(f'/imoveis/{imovel_id}')
+    assert response.status_code == 204
+
+    response = client.get(f'/imoveis/{imovel_id}')
+    assert response.status_code == 404
+
+
+def test_remover_imovel_inexistente(client):
+    response = client.delete('/imoveis/999999999')
+    assert response.status_code == 404
